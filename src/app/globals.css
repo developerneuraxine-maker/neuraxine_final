@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050505;
+  --foreground: #ffffff;
+  --neon: #C6FF00;
+  --dark-grey: #111111;
+  --silver: #C0C0C0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-neon: var(--neon);
+  --color-dark-grey: var(--dark-grey);
+  --color-silver: var(--silver);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(198, 255, 0, 0.2) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #C6FF00;
+  border-radius: 3px;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+main section {
+  position: relative;
+}
+
+main section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 50%,
+    rgba(198, 255, 0, 0.03),
+    transparent 70%
+  );
+  opacity: 0.6;
+}
+
+main section + section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(198, 255, 0, 0.3),
+    transparent
+  );
+  pointer-events: none;
+}
+
+::selection {
+  background: rgba(198, 255, 0, 0.3);
+  color: #ffffff;
+}
+
+canvas {
+  touch-action: none;
+}
+
+@keyframes goldFloatUp {
+  0%   { transform: translateY(0);     opacity: 0.6; }
+  100% { transform: translateY(-80px); opacity: 0;   }
+}
+
+@keyframes goldGlowPulse {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.8; filter: blur(2px); }
+}
+
+@keyframes goldWaveShift {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
