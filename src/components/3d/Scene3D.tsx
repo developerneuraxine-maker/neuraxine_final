@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, Suspense } from "react";
+import { useRef, Suspense, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
@@ -104,12 +104,65 @@ function SceneContent({ services, scrollProgress, hoveredModule, onHoverModule, 
 }
 
 export function Scene3D(props: Scene3DProps) {
+  const [webglError, setWebglError] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    // Check WebGL support
+    if (canvasRef.current) {
+      try {
+        const gl = canvasRef.current.getContext("webgl2") || canvasRef.current.getContext("webgl");
+        if (!gl) {
+          setWebglError(true);
+        }
+      } catch (e) {
+        setWebglError(true);
+      }
+    }
+  }, []);
+
+  if (webglError) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+          background: "linear-gradient(135deg, #050505 0%, #1a1a2e 50%, #050505 100%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ color: "#999", textAlign: "center" }}>
+          <p style={{ fontSize: "18px", marginBottom: "10px" }}>WebGL not available</p>
+          <p style={{ fontSize: "14px", color: "#666" }}>Please enable hardware acceleration or update your browser</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Canvas
+      ref={canvasRef}
       camera={{ position: [0, 0, 6], fov: 60 }}
-      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      gl={{
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      }}
       dpr={[1, 1.5]}
       style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 0 }}
+      onCreated={(state) => {
+        try {
+          state.gl.info.reset?.();
+        } catch (e) {
+          console.warn("WebGL initialization warning:", e);
+        }
+      }}
     >
       <color attach="background" args={["#050505"]} />
       <Suspense fallback={null}>

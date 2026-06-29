@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { BRAND } from "@/lib/constants";
 
 export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const sectionHref = (hash: string) => (pathname === "/" ? hash : `/${hash}`);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -34,7 +37,7 @@ export function Navigation() {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <a href="#" className="group flex items-center gap-2">
+        <a href={pathname === "/" ? "#" : "/"} className="group flex items-center gap-2">
           <div style={{ perspective: "600px" }}>
             <motion.div
               animate={{ rotateY: [0, 360] }}
@@ -65,7 +68,7 @@ export function Navigation() {
           {links.map((link) => (
             <a
               key={link.href}
-              href={link.href}
+              href={sectionHref(link.href)}
               className="text-xs tracking-wider text-silver/70 hover:text-neon transition-colors uppercase"
             >
               {link.label}
@@ -73,7 +76,11 @@ export function Navigation() {
           ))}
         </div>
 
-        <MagneticButton href="#contact" variant="primary" className="px-5! py-2! text-xs!">
+        <MagneticButton
+          href={sectionHref("#contact")}
+          variant="primary"
+          className="px-5! py-2! text-xs!"
+        >
           Book Demo
         </MagneticButton>
       </div>

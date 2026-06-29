@@ -11,7 +11,12 @@ import { MarketingFunnelDemo } from "@/components/demos/MarketingFunnelDemo";
 
 const NXMetalCoin = dynamic(
   () => import("@/components/3d/NXMetalCoin").then((m) => m.NXMetalCoin),
-  { ssr: false, loading: () => <div style={{ width: 420, height: 420 }} /> }
+  {
+    ssr: false,
+    loading: () => (
+      <div style={{ width: "min(82vw, 420px)", height: "min(82vw, 420px)" }} />
+    ),
+  }
 );
 
 const DEMOS = [
@@ -51,8 +56,12 @@ export function DemoLabSection() {
 
         {/* NX coin — centered */}
         <div style={{ position: "relative", zIndex: 1 }}>
-          <Suspense fallback={<div style={{ width: 420, height: 420 }} />}>
-            <NXMetalCoin size={420} />
+          <Suspense
+            fallback={
+              <div style={{ width: "min(82vw, 420px)", height: "min(82vw, 420px)" }} />
+            }
+          >
+            <NXMetalCoin size="min(82vw, 420px)" />
           </Suspense>
         </div>
 

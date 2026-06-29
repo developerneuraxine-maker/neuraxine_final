@@ -130,7 +130,7 @@ function CoinMesh() {
   );
 }
 
-export function NXMetalCoin({ size = 240 }: { size?: number }) {
+export function NXMetalCoin({ size = 240 }: { size?: number | string }) {
   return (
     <div style={{ width: size, height: size, flexShrink: 0 }}>
       <Canvas

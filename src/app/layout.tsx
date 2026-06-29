@@ -65,13 +65,6 @@ const jsonLd = {
     contactType: "sales",
     availableLanguage: "English",
   },
-  offers: {
-    "@type": "AggregateOffer",
-    priceCurrency: "USD",
-    lowPrice: "997",
-    highPrice: "4997",
-    offerCount: "4",
-  },
 };
 
 export default function RootLayout({

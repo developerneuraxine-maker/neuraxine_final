@@ -1,9 +1,8 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { SERVICE_DETAILS } from "@/lib/constants";
-import { SLUG_MAP } from "@/data/services";
+import { getServiceById } from "@/data/services";
 import { ServiceImage } from "@/components/ServiceImage";
 
 interface Service {
@@ -39,7 +38,7 @@ export function EcosystemSection({ services, hoveredModule, onHoverModule }: Eco
             Complete <span className="text-neon">AI Automation</span> Services
           </h2>
           <p className="mt-4 text-silver/60 max-w-2xl mx-auto text-base leading-relaxed">
-            From WhatsApp to voice calls, lead generation to CRM — every system is custom-built
+            From WhatsApp to voice calls, lead generation to CRM â€” every system is custom-built
             for your business and runs fully on autopilot.
           </p>
         </motion.div>
@@ -47,10 +46,10 @@ export function EcosystemSection({ services, hoveredModule, onHoverModule }: Eco
         {/* Service Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {services.map((service, i) => {
-            const details = SERVICE_DETAILS[service.id];
+            const details = getServiceById(service.id);
             const isHovered = hoveredModule === service.id;
             const accent = details?.accent ?? "#C6FF00";
-            const slug = SLUG_MAP[service.id] ?? service.id;
+            const slug = details?.slug ?? service.id;
 
             return (
               <motion.div
@@ -79,7 +78,7 @@ export function EcosystemSection({ services, hoveredModule, onHoverModule }: Eco
                 >
                   {/* Coloured visual banner */}
                   <div
-                    className="relative h-36 flex items-center justify-center overflow-hidden"
+                    className="relative h-44 sm:h-48 flex items-center justify-center overflow-hidden"
                     style={{
                       background: `linear-gradient(135deg, ${accent}22 0%, ${accent}08 50%, transparent 100%)`,
                       borderBottom: `1px solid ${accent}20`,
@@ -116,7 +115,12 @@ export function EcosystemSection({ services, hoveredModule, onHoverModule }: Eco
 
                     {/* Service image with emoji fallback */}
                     <div className="relative">
-                      <ServiceImage slug={slug} emoji={service.icon} size={130} />
+                      <ServiceImage
+                        slug={slug}
+                        emoji={service.icon}
+                        alt={`${service.title} automation illustration`}
+                        size={170}
+                      />
                     </div>
                   </div>
 
@@ -129,7 +133,7 @@ export function EcosystemSection({ services, hoveredModule, onHoverModule }: Eco
                         className="mt-0.5 shrink-0 text-xl leading-none"
                         style={{ color: accent }}
                       >
-                        →
+                        â†’
                       </span>
                     </div>
 
@@ -150,7 +154,7 @@ export function EcosystemSection({ services, hoveredModule, onHoverModule }: Eco
                       className="mt-4 text-xs font-medium"
                       style={{ color: `${accent}70` }}
                     >
-                      View full details →
+                      View full details â†’
                     </p>
                   </div>
                 </Link>
@@ -172,3 +176,4 @@ export function EcosystemSection({ services, hoveredModule, onHoverModule }: Eco
     </section>
   );
 }
+

@@ -5,7 +5,7 @@ interface LeadEmailData {
   phone: string;
   businessName: string;
   service: string;
-  budget: string;
+  budget?: string;
   message?: string;
 }
 
@@ -36,7 +36,6 @@ export async function sendLeadNotification(lead: LeadEmailData): Promise<void> {
           <tr><td style="padding: 8px 0; color: #C0C0C0;">Phone</td><td style="padding: 8px 0;">${lead.phone}</td></tr>
           <tr><td style="padding: 8px 0; color: #C0C0C0;">Business</td><td style="padding: 8px 0;">${lead.businessName}</td></tr>
           <tr><td style="padding: 8px 0; color: #C0C0C0;">Service</td><td style="padding: 8px 0;">${lead.service}</td></tr>
-          <tr><td style="padding: 8px 0; color: #C0C0C0;">Budget</td><td style="padding: 8px 0;">${lead.budget}</td></tr>
           ${lead.message ? `<tr><td style="padding: 8px 0; color: #C0C0C0;">Message</td><td style="padding: 8px 0;">${lead.message}</td></tr>` : ""}
         </table>
       </div>

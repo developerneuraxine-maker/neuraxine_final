@@ -3,7 +3,7 @@ interface LeadPayload {
   phone: string;
   businessName: string;
   service: string;
-  budget: string;
+  budget?: string;
   message?: string;
   source: string;
 }
@@ -19,7 +19,7 @@ export async function sendToWhatsApp(lead: LeadPayload): Promise<void> {
       ...(process.env.WHATSAPP_API_KEY ? { Authorization: `Bearer ${process.env.WHATSAPP_API_KEY}` } : {}),
     },
     body: JSON.stringify({
-      message: `🔔 New Lead\n\nName: ${lead.name}\nPhone: ${lead.phone}\nBusiness: ${lead.businessName}\nService: ${lead.service}\nBudget: ${lead.budget}${lead.message ? `\nMessage: ${lead.message}` : ""}`,
+      message: `🔔 New Lead\n\nName: ${lead.name}\nPhone: ${lead.phone}\nBusiness: ${lead.businessName}\nService: ${lead.service}${lead.message ? `\nMessage: ${lead.message}` : ""}`,
     }),
   }).catch((err) => console.error("WhatsApp webhook failed:", err));
 }

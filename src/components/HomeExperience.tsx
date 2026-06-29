@@ -17,7 +17,22 @@ import { SERVICES } from "@/lib/constants";
 
 const Scene3D = dynamic(
   () => import("@/components/3d/Scene3D").then((m) => m.Scene3D),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+          background: "linear-gradient(135deg, #050505 0%, #1a1a2e 50%, #050505 100%)",
+        }}
+      />
+    ),
+  }
 );
 
 interface Service {

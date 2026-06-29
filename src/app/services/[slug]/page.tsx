@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+﻿import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getServiceBySlug, getAllServiceSlugs } from "@/data/services";
@@ -18,12 +18,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = getServiceBySlug(slug);
   if (!service) return {};
+
   return {
     title: service.title,
-    description: service.fullDescription.slice(0, 155),
+    description: service.shortDescription,
     openGraph: {
       title: `${service.title} | ${BRAND.name}`,
-      description: service.tagline,
+      description: service.shortDescription,
+      images: [{ url: service.image, alt: `${service.title} illustration` }],
     },
   };
 }
@@ -37,175 +39,230 @@ export default async function ServicePage({
   const service = getServiceBySlug(slug);
   if (!service) notFound();
 
-  const { title, tagline, fullDescription, features, stats, useCases, icon, accent } = service;
+  const {
+    title,
+    shortDescription,
+    tagline,
+    longDescription,
+    features,
+    benefits,
+    howItWorks,
+    stats,
+    useCases,
+    emoji,
+    accent,
+    ctaText,
+  } = service;
 
   return (
     <>
       <Navigation />
-      <main className="min-h-screen" style={{ background: "#050505", paddingTop: "80px" }}>
-
-        {/* Hero */}
-        <section className="relative py-24 px-6 text-center overflow-hidden">
+      <main className="min-h-screen overflow-x-hidden bg-[#050505] pt-20">
+        <section className="relative overflow-hidden px-5 py-16 sm:px-6 sm:py-24">
           <div
             aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
             style={{
-              position: "absolute",
-              inset: 0,
               background: `radial-gradient(ellipse 70% 50% at 50% 0%, ${accent}18 0%, transparent 70%)`,
-              pointerEvents: "none",
             }}
           />
-          <div className="relative z-10 mx-auto max-w-4xl">
+
+          <div className="relative z-10 mx-auto max-w-6xl">
             <Link
               href="/#ecosystem"
-              className="inline-flex items-center gap-2 text-xs text-silver/50 hover:text-neon tracking-widest uppercase mb-10 transition-colors"
+              className="mb-10 inline-flex items-center gap-2 text-xs uppercase tracking-widest text-silver/50 transition-colors hover:text-neon"
             >
-              ← Back to Services
+              â† Back to Services
             </Link>
 
-            <div className="mb-8 flex justify-center">
+            <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
               <div
-                className="rounded-2xl flex items-center justify-center"
+                className="mx-auto flex aspect-square w-full max-w-[420px] items-center justify-center overflow-hidden rounded-3xl"
                 style={{
-                  background: `${accent}12`,
+                  background: `${accent}0d`,
                   border: `1px solid ${accent}30`,
-                  width: 100,
-                  height: 100,
+                  boxShadow: `0 0 70px ${accent}10`,
                 }}
               >
-                <ServiceImage slug={slug} emoji={icon} size={64} />
+                <ServiceImage
+                  slug={slug}
+                  emoji={emoji}
+                  alt={`${title} automation illustration`}
+                  size={440}
+                  className="h-full w-full p-4 sm:p-6"
+                  priority
+                />
               </div>
-            </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
-              {title}
-            </h1>
-            <p className="text-lg font-semibold mb-6" style={{ color: accent }}>
-              {tagline}
-            </p>
-            <p className="text-silver/60 max-w-2xl mx-auto leading-relaxed text-base">
-              {fullDescription}
-            </p>
+              <div className="text-center lg:text-left">
+                <p className="mb-3 text-sm font-semibold" style={{ color: accent }}>
+                  {tagline}
+                </p>
+                <h1 className="mb-5 text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl">
+                  {title}
+                </h1>
+                <p className="mb-4 text-base leading-relaxed text-silver/75">
+                  {shortDescription}
+                </p>
+                <p className="text-base leading-relaxed text-silver/55">
+                  {longDescription}
+                </p>
 
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/#contact"
-                className="rounded-full px-8 py-3 font-bold text-black text-sm transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(198,255,0,0.4)]"
-                style={{ background: "#C6FF00" }}
-              >
-                Get This For My Business
-              </Link>
-              <Link
-                href="/#ecosystem"
-                className="rounded-full px-8 py-3 font-medium text-sm border transition-all hover:border-neon/60 hover:text-neon"
-                style={{ color: "#C6FF00", borderColor: `${accent}40` }}
-              >
-                ← All Services
-              </Link>
+                <div className="mt-9 flex flex-col justify-center gap-4 sm:flex-row lg:justify-start">
+                  <Link
+                    href="/#contact"
+                    className="rounded-full bg-neon px-8 py-3 text-center text-sm font-bold text-black transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(198,255,0,0.4)]"
+                  >
+                    {ctaText}
+                  </Link>
+                  <Link
+                    href="/#ecosystem"
+                    className="rounded-full border border-neon/40 bg-neon/5 px-8 py-3 text-center text-sm font-medium text-neon transition-all hover:border-neon/60 hover:bg-neon/10"
+                  >
+                    View All Services
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Stats */}
-        <section className="px-6 py-8">
-          <div className="mx-auto max-w-3xl grid grid-cols-3 gap-4">
+        <section className="px-5 py-8 sm:px-6">
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
             {stats.map((stat) => (
               <div
                 key={stat.label}
                 className="rounded-2xl p-6 text-center"
-                style={{
-                  background: `${accent}08`,
-                  border: `1px solid ${accent}20`,
-                }}
+                style={{ background: `${accent}08`, border: `1px solid ${accent}20` }}
               >
-                <div className="text-3xl font-bold mb-1" style={{ color: accent }}>
+                <div className="mb-1 text-3xl font-bold" style={{ color: accent }}>
                   {stat.value}
                 </div>
-                <div className="text-xs text-silver/50 leading-tight">{stat.label}</div>
+                <div className="text-xs leading-tight text-silver/50">{stat.label}</div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Features */}
-        <section className="px-6 py-12">
-          <div className="mx-auto max-w-4xl">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">
-              What&apos;s Included
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {features.map((f) => (
+        <section className="px-5 py-14 sm:px-6">
+          <div className="mx-auto max-w-5xl">
+            <p className="mb-3 text-xs uppercase tracking-[0.35em] text-neon/70">
+              Capabilities
+            </p>
+            <h2 className="mb-8 text-3xl font-bold text-white">Key Features</h2>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {features.map((feature) => (
                 <div
-                  key={f}
-                  className="flex items-start gap-3 rounded-xl p-4"
-                  style={{ background: "#161616", border: "1px solid #2a2a2a" }}
+                  key={feature}
+                  className="flex items-start gap-3 rounded-xl border border-white/10 bg-[#161616] p-5"
                 >
-                  <span
-                    className="mt-0.5 shrink-0 text-xs font-bold"
+                  <span className="mt-0.5 shrink-0 text-sm font-bold" style={{ color: accent }}>
+                    âœ“
+                  </span>
+                  <span className="text-sm leading-relaxed text-silver/70">{feature}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="px-5 py-14 sm:px-6">
+          <div className="mx-auto max-w-5xl">
+            <p className="mb-3 text-xs uppercase tracking-[0.35em] text-neon/70">
+              Business Impact
+            </p>
+            <h2 className="mb-8 text-3xl font-bold text-white">Benefits</h2>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {benefits.map((benefit, index) => (
+                <div
+                  key={benefit}
+                  className="rounded-2xl p-6"
+                  style={{ background: `${accent}08`, border: `1px solid ${accent}20` }}
+                >
+                  <span className="mb-4 block text-sm font-bold" style={{ color: accent }}>
+                    0{index + 1}
+                  </span>
+                  <p className="text-sm leading-relaxed text-silver/70">{benefit}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="px-5 py-14 sm:px-6">
+          <div className="mx-auto max-w-5xl">
+            <p className="mb-3 text-xs uppercase tracking-[0.35em] text-neon/70">
+              Delivery
+            </p>
+            <h2 className="mb-8 text-3xl font-bold text-white">How It Works</h2>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {howItWorks.map((step, index) => (
+                <div
+                  key={step}
+                  className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#111111] p-6"
+                >
+                  <div
+                    aria-hidden="true"
+                    className="absolute -right-6 -top-8 text-8xl font-bold opacity-[0.04]"
                     style={{ color: accent }}
                   >
-                    ✓
+                    {index + 1}
+                  </div>
+                  <span className="relative mb-4 block text-sm font-bold" style={{ color: accent }}>
+                    Step {index + 1}
                   </span>
-                  <span className="text-sm text-silver/70">{f}</span>
+                  <p className="relative text-sm leading-relaxed text-silver/70">{step}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Use Cases */}
-        <section className="px-6 py-12">
-          <div className="mx-auto max-w-4xl">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">
-              Who Uses This
-            </h2>
+        <section className="px-5 py-14 sm:px-6">
+          <div className="mx-auto max-w-5xl">
+            <p className="mb-3 text-xs uppercase tracking-[0.35em] text-neon/70">
+              Real-World Fit
+            </p>
+            <h2 className="mb-8 text-3xl font-bold text-white">Who Uses This</h2>
             <div className="space-y-4">
-              {useCases.map((uc) => (
+              {useCases.map((useCase) => (
                 <div
-                  key={uc}
-                  className="flex items-start gap-4 rounded-xl p-5"
-                  style={{
-                    background: "#0d0d0d",
-                    border: `1px solid ${accent}18`,
-                  }}
+                  key={useCase}
+                  className="flex items-start gap-4 rounded-xl bg-[#0d0d0d] p-5"
+                  style={{ border: `1px solid ${accent}18` }}
                 >
                   <span className="shrink-0 font-bold" style={{ color: accent }}>
-                    →
+                    â†’
                   </span>
-                  <span className="text-silver/70">{uc}</span>
+                  <span className="text-sm leading-relaxed text-silver/70">{useCase}</span>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="px-6 py-20">
+        <section className="px-5 py-20 sm:px-6">
           <div
-            className="mx-auto max-w-3xl rounded-3xl p-10 text-center"
-            style={{
-              background: `${accent}08`,
-              border: `1px solid ${accent}25`,
-            }}
+            className="mx-auto max-w-3xl rounded-3xl p-8 text-center sm:p-12"
+            style={{ background: `${accent}08`, border: `1px solid ${accent}25` }}
           >
-            <h2 className="text-3xl font-bold text-white mb-4">
+            <h2 className="mb-4 text-3xl font-bold text-white">
               Ready to automate your business?
             </h2>
-            <p className="text-silver/60 mb-8 max-w-md mx-auto">
+            <p className="mx-auto mb-8 max-w-md text-silver/60">
               Book a free demo and we&apos;ll show you exactly how {title} can work for your
               business.
             </p>
             <Link
               href="/#contact"
-              className="inline-flex items-center gap-2 rounded-full px-8 py-3 font-bold text-black text-sm transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(198,255,0,0.4)]"
-              style={{ background: "#C6FF00" }}
+              className="inline-flex rounded-full bg-neon px-8 py-3 text-sm font-bold text-black transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(198,255,0,0.4)]"
             >
-              Book Free Demo →
+              {ctaText} â†’
             </Link>
           </div>
         </section>
-
       </main>
     </>
   );
 }
+

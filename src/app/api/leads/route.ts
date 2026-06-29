@@ -9,7 +9,7 @@ const leadSchema = z.object({
   phone: z.string().min(1),
   businessName: z.string().min(1),
   service: z.string().min(1),
-  budget: z.string().min(1),
+  budget: z.string().optional().default(""),
   message: z.string().optional(),
 });
 
