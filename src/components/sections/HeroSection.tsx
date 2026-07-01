@@ -102,7 +102,7 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex flex-col items-center px-6"
+      className="relative min-h-screen flex flex-col items-center justify-center px-6"
       style={{ overflow: "hidden" }}
     >
       {/* Subtle top atmospheric glow */}
@@ -135,17 +135,13 @@ export function HeroSection() {
         pointerEvents: "none", zIndex: 0,
       }} />
 
-      {/* ── Hero content — all z-index:1 so dome sits behind ── */}
-
-      {/* Nav clearance */}
-      <div style={{ height: "96px" }} />
-
-      {/* Heading, tagline, CTAs */}
+      {/* Heading, tagline, CTAs — vertically centered, nudged down past nav */}
       <motion.div
         initial={{ opacity: 0, y: 28 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 max-w-3xl w-full text-center"
+        style={{ marginTop: "64px" }}
       >
         <p className="mb-4 text-xs tracking-[0.4em] text-neon/80 uppercase">
           Next-Generation AI Automation
@@ -163,15 +159,12 @@ export function HeroSection() {
         </div>
       </motion.div>
 
-      {/* Spacer */}
-      <div style={{ height: "48px" }} />
-
-      {/* Scroll to explore */}
+      {/* Scroll to explore — pinned to bottom */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4, duration: 1 }}
-        className="relative z-10 flex flex-col items-center gap-2"
+        className="absolute bottom-10 z-10 flex flex-col items-center gap-2"
         style={{ color: "rgba(255,255,255,0.50)" }}
       >
         <span className="text-[10px] tracking-[0.3em] uppercase">Scroll to explore</span>
@@ -185,12 +178,6 @@ export function HeroSection() {
         />
       </motion.div>
 
-      {/* flex-1 pushes content toward the top, dome fills bottom via absolute */}
-      <div className="flex-1" />
-
-      {/* ══════════════════════════════════════════════════════════
-          GOLDEN DOME — exact Voltix-style implementation
-      ══════════════════════════════════════════════════════════ */}
       <div className="golden-dome" aria-hidden="true" />
 
     </section>
