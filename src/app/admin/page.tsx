@@ -78,8 +78,8 @@ export default function AdminDashboard() {
       .catch(() => router.push("/admin/login"))
       .finally(() => setLoadingLeads(false));
 
-    // Fetch all services (enabled and disabled)
-    fetch("/api/services?all=true")
+    // Fetch all services (enabled and disabled) — auth required
+    fetch("/api/services?all=true", { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load services");
         return res.json();
@@ -91,8 +91,12 @@ export default function AdminDashboard() {
 
   // Refresh services function
   const refreshServices = async () => {
+    const token = localStorage.getItem("admin_token");
+    if (!token) return;
     try {
-      const res = await fetch("/api/services?all=true");
+      const res = await fetch("/api/services?all=true", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (res.ok) {
         const data = await res.json();
         setServices(data);

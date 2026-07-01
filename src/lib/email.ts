@@ -9,6 +9,15 @@ interface LeadEmailData {
   message?: string;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
 export async function sendLeadNotification(lead: LeadEmailData): Promise<void> {
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, NOTIFICATION_EMAIL } = process.env;
 
@@ -20,23 +29,29 @@ export async function sendLeadNotification(lead: LeadEmailData): Promise<void> {
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
     port: Number(SMTP_PORT) || 587,
-    secure: false,
+    secure: Number(SMTP_PORT) === 465,
     auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
+
+  const name = escapeHtml(lead.name);
+  const phone = escapeHtml(lead.phone);
+  const business = escapeHtml(lead.businessName);
+  const service = escapeHtml(lead.service);
+  const message = lead.message ? escapeHtml(lead.message) : null;
 
   await transporter.sendMail({
     from: `"Neuraxine AI" <${SMTP_USER}>`,
     to: NOTIFICATION_EMAIL,
-    subject: `New Lead: ${lead.name} — ${lead.businessName}`,
+    subject: `New Lead: ${name} — ${business}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #050505; color: #fff; padding: 32px; border-radius: 12px;">
         <h1 style="color: #C6FF00; margin-bottom: 24px;">New Lead Received</h1>
         <table style="width: 100%; border-collapse: collapse;">
-          <tr><td style="padding: 8px 0; color: #C0C0C0;">Name</td><td style="padding: 8px 0;">${lead.name}</td></tr>
-          <tr><td style="padding: 8px 0; color: #C0C0C0;">Phone</td><td style="padding: 8px 0;">${lead.phone}</td></tr>
-          <tr><td style="padding: 8px 0; color: #C0C0C0;">Business</td><td style="padding: 8px 0;">${lead.businessName}</td></tr>
-          <tr><td style="padding: 8px 0; color: #C0C0C0;">Service</td><td style="padding: 8px 0;">${lead.service}</td></tr>
-          ${lead.message ? `<tr><td style="padding: 8px 0; color: #C0C0C0;">Message</td><td style="padding: 8px 0;">${lead.message}</td></tr>` : ""}
+          <tr><td style="padding: 8px 0; color: #C0C0C0;">Name</td><td style="padding: 8px 0;">${name}</td></tr>
+          <tr><td style="padding: 8px 0; color: #C0C0C0;">Phone</td><td style="padding: 8px 0;">${phone}</td></tr>
+          <tr><td style="padding: 8px 0; color: #C0C0C0;">Business</td><td style="padding: 8px 0;">${business}</td></tr>
+          <tr><td style="padding: 8px 0; color: #C0C0C0;">Service</td><td style="padding: 8px 0;">${service}</td></tr>
+          ${message ? `<tr><td style="padding: 8px 0; color: #C0C0C0;">Message</td><td style="padding: 8px 0;">${message}</td></tr>` : ""}
         </table>
       </div>
     `,

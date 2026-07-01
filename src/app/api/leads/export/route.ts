@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
 import { verifyToken } from "@/lib/auth";
+
+const FORMULA_CHARS = /^[=+\-@\t\r]/;
+
+function csvCell(value: unknown): string {
+  const str = String(value ?? "");
+  const safe = FORMULA_CHARS.test(str) ? `'${str}` : str;
+  return `"${safe.replace(/"/g, '""')}"`;
+}
+
+const isSupabaseConfigured =
+  !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  !process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder");
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -12,10 +23,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  if (!isSupabaseConfigured) {
+    return NextResponse.json({ error: "Database not configured" }, { status: 503 });
+  }
+
+  const { supabaseAdmin } = await import("@/lib/supabase");
   const { data: leads, error } = await supabaseAdmin
     .from("leads")
     .select("*")
-    .order("createdAt", { ascending: false });
+    .order("createdAt", { ascending: false })
+    .limit(10000);
 
   if (error || !leads) {
     console.error("Export leads select error:", error);
@@ -34,7 +51,7 @@ export async function GET(request: NextRequest) {
       l.source,
       new Date(l.createdAt).toISOString(),
     ]
-      .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+      .map(csvCell)
       .join(",")
   );
 
@@ -44,6 +61,7 @@ export async function GET(request: NextRequest) {
     headers: {
       "Content-Type": "text/csv",
       "Content-Disposition": `attachment; filename="neuraxine-leads-${Date.now()}.csv"`,
+      "Cache-Control": "no-store",
     },
   });
 }

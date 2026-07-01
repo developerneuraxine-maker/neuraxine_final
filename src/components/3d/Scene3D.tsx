@@ -1,8 +1,15 @@
 "use client";
 
-import { useRef, Suspense, useState, useEffect } from "react";
+import { useRef, Suspense, useState, useEffect, Component, type ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
+
+class EffectsErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() { return this.state.failed ? null : this.props.children; }
+}
 import { ParticleUniverse } from "./ParticleUniverse";
 import { BackgroundSystem } from "./BackgroundSystem";
 import { DataStreams } from "./DataStreams";
@@ -166,6 +173,12 @@ export function Scene3D(props: Scene3DProps) {
       <color attach="background" args={["#050505"]} />
       <Suspense fallback={null}>
         <SceneContent {...props} />
+        <EffectsErrorBoundary>
+          <EffectComposer>
+            <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} intensity={0.8} />
+            <Vignette eskil={false} offset={0.1} darkness={0.8} />
+          </EffectComposer>
+        </EffectsErrorBoundary>
       </Suspense>
     </Canvas>
   );
